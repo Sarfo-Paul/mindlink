@@ -1,0 +1,51 @@
+% MSc thesis template (scaffold)
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{amsmath,amssymb}
+\usepackage{tocloft}
+\usepackage{csquotes}
+\usepackage[backend=bibtex,style=ieee]{biblatex}
+\addbibresource{references.bib}
+\geometry{margin=1in}
+\setcounter{secnumdepth}{3}
+\onehalfspacing
+
+\title{Design and Implementation of an Accessible AI-Based Mental Health Monitoring System for Low-Resource Settings Using USSD and Web Technologies}
+\author{[Your Name] \\ MSc Thesis \\ Department of [Dept] \\ [University Name]}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+\noindent This document is a scaffold created to accelerate your MSc thesis work. It contains chapter stubs, a suggested structure matching the supplied guidelines, and example text. Replace placeholders with your work and ensure proper attribution.
+\end{abstract}
+
+\pagenumbering{roman}
+\tableofcontents
+\listoffigures
+\listoftables
+\newpage
+\pagenumbering{arabic}
+
+% Chapters
+\include{chapters/ch1_introduction}
+\include{chapters/ch2_lit_review}
+\include{chapters/ch3_methodology}
+\include{chapters/ch4_design_implementation}
+\include{chapters/ch5_evaluation_results}
+\include{chapters/ch6_conclusion_future}
+
+\printbibliography
+
+\appendix
+\include{chapters/appendix_a}
+
+\end{document}
