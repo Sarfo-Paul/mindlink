@@ -1,6 +1,4 @@
-echo "VITE_OPENROUTER_API_KEY=your_key_here" > .env
-MindLink
-========
+# MindLink
 
 > **A private, AI-assisted mental health triage system that helps individuals detect risk early and connects them to the right support — even without internet access.**
 
@@ -8,8 +6,7 @@ MindLink is a stigma-free mental health entry point built for a health hackathon
 
 ---
 
-How It Works
------------
+## How It Works
 
 ```
 User (USSD / Web)
@@ -27,8 +24,7 @@ Guided Actions + Escalation to Support Network
 
 ---
 
-Tech Stack
-----------
+## Tech Stack
 
 | Layer     | Technology                                       |
 | --------- | ------------------------------------------------ |
@@ -43,8 +39,7 @@ Tech Stack
 
 ---
 
-Project Structure
------------------
+## Project Structure
 
 ```
 mindlink/
@@ -72,14 +67,13 @@ mindlink/
 
 ---
 
-AI Risk Detection Engine
--------------------------
+## AI Risk Detection Engine
 
 The core of MindLink. Located in `server/src/services/triageEngine.ts`.
 
 Every check-in triggers a multi-signal pipeline:
 
-**1. Daily Score (0–100)**
+### 1. Daily Score (0–100)
 
 Weighted combination of the five check-in inputs:
 
@@ -91,23 +85,23 @@ Weighted combination of the five check-in inputs:
 | Energy            | 20%    | 1–5 scale                             |
 | Social connection | 15%    | Binary: isolated (1) or connected (5) |
 
-**2. Trend Detection**
+### 2. Trend Detection
 
 Linear regression over the last 10 check-ins. A slope below −3 points/day is flagged as a declining trend.
 
-**3. Behavioral Signals**
+### 3. Behavioral Signals
 
 - **`daysSinceLastCheckin`** — gaps of 3+ days raise a flag; 5+ days with low score escalates to RED
 - **`missedDaysInLastWeek`** — 4+ missed days in a 7-day window triggers a yellow flag
 
-**4. Cognitive Signals**
+### 4. Cognitive Signals
 
 Compared across the last 2 game sessions:
 
 - Accuracy drop > 20% (and current accuracy < 60%) → cognitive penalty
 - Duration increase > 1.5× previous → cognitive penalty
 
-**5. Calibration-Aware Confidence**
+### 5. Calibration-Aware Confidence
 
 | Check-ins | Confidence | Baseline checks               |
 | --------- | ---------- | ----------------------------- |
@@ -117,7 +111,7 @@ Compared across the last 2 game sessions:
 
 This prevents false positives for new users.
 
-**Risk Output**
+### Risk Output
 
 ```typescript
 {
@@ -129,8 +123,7 @@ This prevents false positives for new users.
 
 ---
 
-Cognitive Games
----------------
+## Cognitive Games
 
 Games act as **passive assessment tools**, not entertainment. Results feed directly into the risk engine.
 
@@ -142,8 +135,7 @@ Games act as **passive assessment tools**, not entertainment. Results feed direc
 
 ---
 
-Escalation Pathway
-------------------
+## Escalation Pathway
 
 1. **In-app alert** — `RiskAlertModal` appears post-check-in for YELLOW/RED. Options: connect to counsellor, talk to AI, crisis helpline (RED only).
 2. **AI Chatbot** — keyword-aware + risk-context responses. Escalates to human referral when RED + negative language detected.
@@ -153,13 +145,12 @@ Escalation Pathway
 
 ---
 
-Database Schema (key models)
-----------------------------
+## Database Schema (key models)
 
 | Model            | Purpose                                                     |
 | ---------------- | ----------------------------------------------------------- |
 | `User`           | Auth, role (USER/PRACTITIONER/VOLUNTEER), emergency contact |
-| `Checkin`        | 5-signal daily check-in, supports `source: "USSD" \| "WEB"` |
+| `Checkin`        | 5-signal daily check-in, supports `source: "USSD" | "WEB"` |
 | `RiskScore`      | Engine output: level, score, explanation, confidence        |
 | `GameSession`    | Game results: score, accuracy, duration, mistakes           |
 | `ChatbotLog`     | Sentiment score, flagged keywords                           |
@@ -167,16 +158,15 @@ Database Schema (key models)
 
 ---
 
-Getting Started
----------------
+## Getting Started
 
-**Prerequisites**
+### Prerequisites
 
 - Node.js 18+
 - PostgreSQL database
 - pnpm (frontend) / npm (server)
 
-**1. Frontend**
+### 1. Frontend
 
 ```bash
 # Install dependencies
@@ -189,7 +179,7 @@ echo "VITE_OPENROUTER_API_KEY=your_key_here" > .env
 pnpm dev
 ```
 
-**2. Backend**
+### 2. Backend
 
 ```bash
 cd server
@@ -212,7 +202,7 @@ npm run dev
 
 The backend runs on **http://localhost:4000**.
 
-**3. Environment Variables**
+### 3. Environment Variables
 
 | Variable                  | Where           | Description                                             |
 | ------------------------- | --------------- | ------------------------------------------------------- |
@@ -225,8 +215,7 @@ The backend runs on **http://localhost:4000**.
 
 ---
 
-User Roles
-----------
+## User Roles
 
 | Role           | Access                                     | How to set                                |
 | -------------- | ------------------------------------------ | ----------------------------------------- |
@@ -236,8 +225,7 @@ User Roles
 
 ---
 
-API Routes (Triage Server)
----------------------------
+## API Routes (Triage Server)
 
 | Method | Path                        | Auth                         | Description                     |
 | ------ | --------------------------- | ---------------------------- | ------------------------------- |
@@ -258,7 +246,6 @@ API Routes (Triage Server)
 
 ---
 
-What MindLink Is Not
---------------------
+## What MindLink Is Not
 
 MindLink does **not** diagnose mental illness or replace therapists. It triages and guides — detecting early risk patterns and connecting users to appropriate human support.
