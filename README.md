@@ -1,8 +1,33 @@
 echo "VITE_OPENROUTER_API_KEY=your_key_here" > .env
+<p align="center">
+        <img src="public/images/banner.svg" alt="MindLink banner" width="900" />
+</p>
+
 MindLink
 ========
 
-> **A private, AI-assisted mental health triage system that helps individuals detect risk early and connects them to the right support — even without internet access.**
+<p align="center">
+        <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="version"/>
+        <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="license"/>
+        <img src="https://img.shields.io/badge/node-18%2B-339933.svg" alt="node"/>
+        <img src="https://img.shields.io/badge/frontend-React%20%7C%20Vite-%23061DA5.svg" alt="frontend"/>
+</p>
+
+**Table of Contents**
+
+- [How It Works](#how-it-works)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [AI Risk Detection Engine](#ai-risk-detection-engine)
+- [Cognitive Games](#cognitive-games)
+- [Escalation Pathway](#escalation-pathway)
+- [Database Schema (key models)](#database-schema-key-models)
+- [Getting Started](#getting-started)
+- [User Roles](#user-roles)
+- [API Routes (Triage Server)](#api-routes-triage-server)
+- [What MindLink Is Not](#what-mindlink-is-not)
+
+> A private, AI-assisted mental health triage system that helps individuals detect risk early and connects them to the right support — even without internet access.
 
 MindLink is a stigma-free mental health entry point built for a health hackathon. It uses AI-driven risk detection, cognitive mini-games, and a structured escalation pathway to identify early warning signs and guide users toward care — without diagnosing or replacing professionals.
 
@@ -11,7 +36,7 @@ MindLink is a stigma-free mental health entry point built for a health hackathon
 How It Works
 -----------
 
-```
+
 User (USSD / Web)
         ↓
 Daily Check-ins (mood, sleep, stress, energy, social)
@@ -23,7 +48,7 @@ AI Risk Detection Engine
 Risk Classification  🟢 Stable  🟡 At Risk  🔴 High Risk
         ↓
 Guided Actions + Escalation to Support Network
-```
+
 
 ---
 
@@ -46,7 +71,7 @@ Tech Stack
 Project Structure
 -----------------
 
-```
+
 mindlink/
 ├── src/                        # React frontend
 │   ├── components/
@@ -68,18 +93,18 @@ mindlink/
     │       └── triageEngine.ts # Risk scoring, trend detection, classification
     └── prisma/
         └── schema.prisma       # PostgreSQL schema
-```
+
 
 ---
 
 AI Risk Detection Engine
 -------------------------
 
-The core of MindLink. Located in `server/src/services/triageEngine.ts`.
+The core of MindLink. Located in server/src/services/triageEngine.ts.
 
 Every check-in triggers a multi-signal pipeline:
 
-**1. Daily Score (0–100)**
+1. Daily Score (0–100)
 
 Weighted combination of the five check-in inputs:
 
@@ -91,23 +116,23 @@ Weighted combination of the five check-in inputs:
 | Energy            | 20%    | 1–5 scale                             |
 | Social connection | 15%    | Binary: isolated (1) or connected (5) |
 
-**2. Trend Detection**
+2. Trend Detection
 
 Linear regression over the last 10 check-ins. A slope below −3 points/day is flagged as a declining trend.
 
-**3. Behavioral Signals**
+3. Behavioral Signals
 
-- **`daysSinceLastCheckin`** — gaps of 3+ days raise a flag; 5+ days with low score escalates to RED
-- **`missedDaysInLastWeek`** — 4+ missed days in a 7-day window triggers a yellow flag
+- daysSinceLastCheckin — gaps of 3+ days raise a flag; 5+ days with low score escalates to RED
+- missedDaysInLastWeek — 4+ missed days in a 7-day window triggers a yellow flag
 
-**4. Cognitive Signals**
+4. Cognitive Signals
 
 Compared across the last 2 game sessions:
 
 - Accuracy drop > 20% (and current accuracy < 60%) → cognitive penalty
 - Duration increase > 1.5× previous → cognitive penalty
 
-**5. Calibration-Aware Confidence**
+5. Calibration-Aware Confidence
 
 | Check-ins | Confidence | Baseline checks               |
 | --------- | ---------- | ----------------------------- |
@@ -117,39 +142,39 @@ Compared across the last 2 game sessions:
 
 This prevents false positives for new users.
 
-**Risk Output**
+Risk Output
 
-```typescript
+typescript
 {
   level: 'GREEN' | 'YELLOW' | 'RED',
   explanation: string,   // Human-readable, e.g. "consistent declining trend over 8 days"
   confidenceLevel: 'LOW' | 'MEDIUM' | 'HIGH'
 }
-```
+
 
 ---
 
 Cognitive Games
 ---------------
 
-Games act as **passive assessment tools**, not entertainment. Results feed directly into the risk engine.
+Games act as passive assessment tools, not entertainment. Results feed directly into the risk engine.
 
 | Game             | Measures                              | MMSE Formula                                                     |
 | ---------------- | ------------------------------------- | ---------------------------------------------------------------- |
-| **Guess What**   | Visual memory, recall depth           | Log-weighted accuracy + response time, normalized to 0–30        |
-| **Stroop**       | Executive function, cognitive control | 55% accuracy + 30% speed + 15% error penalty, normalized to 0–30 |
-| **Memory Match** | Working memory (dashboard mini-game)  | Score + accuracy + mistakes stored to DB                         |
+| Guess What   | Visual memory, recall depth           | Log-weighted accuracy + response time, normalized to 0–30        |
+| Stroop       | Executive function, cognitive control | 55% accuracy + 30% speed + 15% error penalty, normalized to 0–30 |
+| Memory Match | Working memory (dashboard mini-game)  | Score + accuracy + mistakes stored to DB                         |
 
 ---
 
 Escalation Pathway
 ------------------
 
-1. **In-app alert** — `RiskAlertModal` appears post-check-in for YELLOW/RED. Options: connect to counsellor, talk to AI, crisis helpline (RED only).
-2. **AI Chatbot** — keyword-aware + risk-context responses. Escalates to human referral when RED + negative language detected.
-3. **One-click support request** — creates an open `SupportRequest` record in the DB.
-4. **Practitioner triage queue** — role-protected dashboard sorted by risk severity (RED → YELLOW → GREEN). Assign, review case history, resolve.
-5. **Professional scheduling** — browse support network (real DB users + mock professionals), pick a time slot, generate a Meet link.
+1. In-app alert — RiskAlertModal appears post-check-in for YELLOW/RED. Options: connect to counsellor, talk to AI, crisis helpline (RED only).
+2. AI Chatbot — keyword-aware + risk-context responses. Escalates to human referral when RED + negative language detected.
+3. One-click support request — creates an open SupportRequest record in the DB.
+4. Practitioner triage queue — role-protected dashboard sorted by risk severity (RED → YELLOW → GREEN). Assign, review case history, resolve.
+5. Professional scheduling — browse support network (real DB users + mock professionals), pick a time slot, generate a Meet link.
 
 ---
 
@@ -158,27 +183,27 @@ Database Schema (key models)
 
 | Model            | Purpose                                                     |
 | ---------------- | ----------------------------------------------------------- |
-| `User`           | Auth, role (USER/PRACTITIONER/VOLUNTEER), emergency contact |
-| `Checkin`        | 5-signal daily check-in, supports `source: "USSD" \| "WEB"` |
-| `RiskScore`      | Engine output: level, score, explanation, confidence        |
-| `GameSession`    | Game results: score, accuracy, duration, mistakes           |
-| `ChatbotLog`     | Sentiment score, flagged keywords                           |
-| `SupportRequest` | Status: OPEN → IN_PROGRESS → RESOLVED                       |
+| User           | Auth, role (USER/PRACTITIONER/VOLUNTEER), emergency contact |
+| Checkin        | 5-signal daily check-in, supports source: "USSD" \| "WEB" |
+| RiskScore      | Engine output: level, score, explanation, confidence        |
+| GameSession    | Game results: score, accuracy, duration, mistakes           |
+| ChatbotLog     | Sentiment score, flagged keywords                           |
+| SupportRequest | Status: OPEN → IN_PROGRESS → RESOLVED                       |
 
 ---
 
 Getting Started
 ---------------
 
-**Prerequisites**
+Prerequisites
 
 - Node.js 18+
 - PostgreSQL database
 - pnpm (frontend) / npm (server)
 
-**1. Frontend**
+1. Frontend
 
-```bash
+bash
 # Install dependencies
 pnpm install
 
@@ -187,11 +212,11 @@ echo "VITE_OPENROUTER_API_KEY=your_key_here" > .env
 
 # Start dev server
 pnpm dev
-```
 
-**2. Backend**
 
-```bash
+2. Backend
+
+bash
 cd server
 
 # Install dependencies
@@ -208,20 +233,20 @@ npx prisma db push
 
 # Start dev server
 npm run dev
-```
 
-The backend runs on **http://localhost:4000**.
 
-**3. Environment Variables**
+The backend runs on http://localhost:4000.
+
+3. Environment Variables
 
 | Variable                  | Where           | Description                                             |
 | ------------------------- | --------------- | ------------------------------------------------------- |
-| `VITE_OPENROUTER_API_KEY` | Frontend `.env` | OpenRouter API key for AI chat                          |
-| `VITE_SERVER_API_URL`     | Frontend `.env` | Triage server base URL (default: render.com deployment) |
-| `DATABASE_URL`            | `server/.env`   | PostgreSQL connection string                            |
-| `DIRECT_URL`              | `server/.env`   | Direct PostgreSQL URL (for Prisma migrations)           |
-| `JWT_SECRET`              | `server/.env`   | JWT signing secret                                      |
-| `PORT`                    | `server/.env`   | Server port (default: 4000)                             |
+| VITE_OPENROUTER_API_KEY | Frontend .env | OpenRouter API key for AI chat                          |
+| VITE_SERVER_API_URL     | Frontend .env | Triage server base URL (default: render.com deployment) |
+| DATABASE_URL            | server/.env   | PostgreSQL connection string                            |
+| DIRECT_URL              | server/.env   | Direct PostgreSQL URL (for Prisma migrations)           |
+| JWT_SECRET              | server/.env   | JWT signing secret                                      |
+| PORT                    | server/.env   | Server port (default: 4000)                             |
 
 ---
 
@@ -230,9 +255,9 @@ User Roles
 
 | Role           | Access                                     | How to set                                |
 | -------------- | ------------------------------------------ | ----------------------------------------- |
-| `USER`         | Dashboard, check-ins, games, chat, support | Default on registration                   |
-| `PRACTITIONER` | + Triage queue, case assignment/resolution | Invite code: `MINDLINK-PRACTITIONER-2024` |
-| `VOLUNTEER`    | + Triage queue (same as practitioner)      | Invite code: `MINDLINK-VOLUNTEER-2024`    |
+| USER         | Dashboard, check-ins, games, chat, support | Default on registration                   |
+| PRACTITIONER | + Triage queue, case assignment/resolution | Invite code: MINDLINK-PRACTITIONER-2024 |
+| VOLUNTEER    | + Triage queue (same as practitioner)      | Invite code: MINDLINK-VOLUNTEER-2024    |
 
 ---
 
@@ -241,24 +266,24 @@ API Routes (Triage Server)
 
 | Method | Path                        | Auth                         | Description                     |
 | ------ | --------------------------- | ---------------------------- | ------------------------------- |
-| GET    | `/health`                   | —                            | Health check                    |
-| POST   | `/api/auth/register`        | —                            | Register user                   |
-| POST   | `/api/auth/login`           | —                            | Login → JWT                     |
-| PUT    | `/api/user/profile`         | JWT                          | Update profile                  |
-| GET    | `/api/history/:userId`      | —                            | Last 10 check-ins               |
-| POST   | `/api/checkins`             | —                            | Submit check-in → run triage    |
-| POST   | `/api/games`                | —                            | Record game session             |
-| GET    | `/api/games/:userId`        | —                            | Fetch game history              |
-| GET    | `/api/professionals`        | —                            | List practitioners + volunteers |
-| POST   | `/api/chat`                 | —                            | Keyword-aware chatbot           |
-| POST   | `/api/support`              | JWT                          | Submit support request          |
-| GET    | `/api/practitioner/queue`   | JWT + PRACTITIONER/VOLUNTEER | Triage queue                    |
-| POST   | `/api/practitioner/assign`  | JWT + PRACTITIONER/VOLUNTEER | Assign case                     |
-| POST   | `/api/practitioner/resolve` | JWT + PRACTITIONER/VOLUNTEER | Resolve case                    |
+| GET    | /health                   | —                            | Health check                    |
+| POST   | /api/auth/register        | —                            | Register user                   |
+| POST   | /api/auth/login           | —                            | Login → JWT                     |
+| PUT    | /api/user/profile         | JWT                          | Update profile                  |
+| GET    | /api/history/:userId      | —                            | Last 10 check-ins               |
+| POST   | /api/checkins             | —                            | Submit check-in → run triage    |
+| POST   | /api/games                | —                            | Record game session             |
+| GET    | /api/games/:userId        | —                            | Fetch game history              |
+| GET    | /api/professionals        | —                            | List practitioners + volunteers |
+| POST   | /api/chat                 | —                            | Keyword-aware chatbot           |
+| POST   | /api/support              | JWT                          | Submit support request          |
+| GET    | /api/practitioner/queue   | JWT + PRACTITIONER/VOLUNTEER | Triage queue                    |
+| POST   | /api/practitioner/assign  | JWT + PRACTITIONER/VOLUNTEER | Assign case                     |
+| POST   | /api/practitioner/resolve | JWT + PRACTITIONER/VOLUNTEER | Resolve case                    |
 
 ---
 
 What MindLink Is Not
 --------------------
 
-MindLink does **not** diagnose mental illness or replace therapists. It triages and guides — detecting early risk patterns and connecting users to appropriate human support.
+MindLink does not diagnose mental illness or replace therapists. It triages and guides — detecting early risk patterns and connecting users to appropriate human support.
